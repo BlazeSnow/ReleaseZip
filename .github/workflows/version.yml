@@ -6,7 +6,11 @@ on:
       tag:
         description: 'Release tag'
         required: true
-        default: 'v1.0.0'
+        default: 'v1.0.0b1'
+      prerelease:
+        description: 'Is this a prerelease?'
+        required: false
+        default: 'true'
 
 permissions:
   contents: write
@@ -23,3 +27,4 @@ jobs:
     - uses: ncipollo/release-action@v1
       with:
         tag: ${{ inputs.tag }}
+        prerelease: ${{ inputs.prerelease }}
