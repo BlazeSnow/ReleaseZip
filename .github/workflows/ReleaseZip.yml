@@ -11,14 +11,6 @@ on:
         required: false
         type: number
         default: 7
-      include_sha256:
-        required: false
-        type: boolean
-        default: true
-      fetch_full_history:
-        required: false
-        type: boolean
-        default: false
 
   workflow_dispatch:
     inputs:
@@ -32,16 +24,6 @@ on:
         required: false
         type: number
         default: 7
-      include_sha256:
-        description: "Generate sha256 file"
-        required: false
-        type: boolean
-        default: true
-      fetch_full_history:
-        description: "Fetch full git history (set true only when needed)"
-        required: false
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -59,15 +41,8 @@ jobs:
       run: |
         set -euo pipefail
 
-        # Validate artifact name used by upload-artifact.
         if [ -z "$INPUT_ARTIFACT_NAME" ]; then
           echo "artifact_name cannot be empty"
-          exit 1
-        fi
-
-        # Keep retention within artifact service limits (1-90 days).
-        if ! [[ "$INPUT_RETENTION_DAYS" =~ ^[0-9]+$ ]]; then
-          echo "retention_days must be an integer"
           exit 1
         fi
 
@@ -76,11 +51,11 @@ jobs:
           exit 1
         fi
 
-    - name: Checkout repository (with LFS)
+    - name: Checkout repository
       uses: actions/checkout@v6
       with:
         lfs: true
-        fetch-depth: ${{ inputs.fetch_full_history && 0 || 1 }}
+        fetch-depth: 0
 
     - name: Pull LFS objects
       run: |
@@ -93,25 +68,14 @@ jobs:
         (cd "$GITHUB_WORKSPACE" && zip -r "${{ inputs.artifact_name }}.zip" . -x ".git/*")
 
     - name: Generate sha256 file
-      if: ${{ inputs.include_sha256 }}
       run: sha256sum "${{ inputs.artifact_name }}.zip" > "${{ inputs.artifact_name }}.zip.sha256"
 
-    - name: Upload artifact with sha256
-      if: ${{ inputs.include_sha256 }}
+    - name: Upload artifact
       uses: actions/upload-artifact@v6
       with:
         name: ReleaseZip
         path: |
           ${{ inputs.artifact_name }}.zip
           ${{ inputs.artifact_name }}.zip.sha256
-        if-no-files-found: error
-        retention-days: ${{ inputs.retention_days }}
-
-    - name: Upload artifact without sha256
-      if: ${{ !inputs.include_sha256 }}
-      uses: actions/upload-artifact@v6
-      with:
-        name: ReleaseZip
-        path: ${{ inputs.artifact_name }}.zip
         if-no-files-found: error
         retention-days: ${{ inputs.retention_days }}
