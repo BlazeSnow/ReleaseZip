@@ -88,22 +88,31 @@ jobs:
         git lfs ls-files
 
     - name: Build zip package
+      with:
+        PKG_NAME: ${{ inputs.artifact_name }}
       run: |
         set -e
-        REPO_NAME="${GITHUB_REPOSITORY#*/}"
-        SHORT_SHA="${GITHUB_SHA::7}"
-        PKG_NAME="${REPO_NAME}-${SHORT_SHA}.zip"
-        mkdir -p dist
-        (cd "$GITHUB_WORKSPACE" && zip -r "dist/$PKG_NAME" . -x ".git/*")
-        if [ "${{ inputs.include_sha256 }}" = "true" ]; then
-          sha256sum "dist/$PKG_NAME" > "dist/$PKG_NAME.sha256"
-        fi
-        ls -lh dist
+        (cd "$GITHUB_WORKSPACE" && zip -r "$PKG_NAME.zip" . -x ".git/*")
+
+    - name: Generate sha256 file
+      if: ${{ inputs.include_sha256 }}
+      with:
+        PKG_NAME: ${{ inputs.artifact_name }}
+      run: sha256sum "$PKG_NAME.zip" > "$PKG_NAME.zip.sha256"
+
+    - name: Upload sha256 artifact
+      if: ${{ inputs.include_sha256 }}
+      uses: actions/upload-artifact@v6
+      with:
+        name: ${{ inputs.artifact_name }}-sha256
+        path: ${{ inputs.artifact_name }}.zip.sha256
+        if-no-files-found: error
+        retention-days: ${{ inputs.retention_days }}
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: ${{ inputs.artifact_name }}
-        path: dist/*
+        path: ${{ inputs.artifact_name }}.zip
         if-no-files-found: error
         retention-days: ${{ inputs.retention_days }}
