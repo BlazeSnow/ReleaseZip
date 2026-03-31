@@ -1,0 +1,73 @@
+name: ReleaseZip
+description: Create a zip archive of the repository, generate a SHA256 file, and upload both as artifacts.
+
+inputs:
+  artifact_name:
+    description: Base name of the generated files and uploaded artifact.
+    required: false
+    default: repo-zip
+  retention_days:
+    description: Artifact retention days (1-90).
+    required: false
+    default: "7"
+
+outputs:
+  zip_path:
+    description: Absolute path to the generated zip file.
+    value: ${{ steps.package.outputs.zip_path }}
+  sha256_path:
+    description: Absolute path to the generated checksum file.
+    value: ${{ steps.package.outputs.sha256_path }}
+
+runs:
+  using: composite
+  steps:
+  - name: Validate inputs and package repository
+    id: package
+    shell: bash
+    env:
+      INPUT_ARTIFACT_NAME: ${{ inputs.artifact_name }}
+      INPUT_RETENTION_DAYS: ${{ inputs.retention_days }}
+    run: |
+      set -euo pipefail
+
+      if [[ -z "$INPUT_ARTIFACT_NAME" ]]; then
+        echo "artifact_name cannot be empty"
+        exit 1
+      fi
+
+      if [[ ! "$INPUT_ARTIFACT_NAME" =~ ^[A-Za-z0-9._-]+$ ]]; then
+        echo "artifact_name only supports: A-Z a-z 0-9 . _ -"
+        exit 1
+      fi
+
+      if [[ ! "$INPUT_RETENTION_DAYS" =~ ^[0-9]+$ ]]; then
+        echo "retention_days must be an integer"
+        exit 1
+      fi
+
+      if (( INPUT_RETENTION_DAYS < 1 || INPUT_RETENTION_DAYS > 90 )); then
+        echo "retention_days must be between 1 and 90"
+        exit 1
+      fi
+
+      ZIP_PATH="$GITHUB_WORKSPACE/${INPUT_ARTIFACT_NAME}.zip"
+      SHA_PATH="$GITHUB_WORKSPACE/${INPUT_ARTIFACT_NAME}.zip.sha256"
+
+      rm -f "$ZIP_PATH" "$SHA_PATH"
+      cd "$GITHUB_WORKSPACE"
+      zip -r "$ZIP_PATH" . -x ".git/*"
+      sha256sum "$ZIP_PATH" > "$SHA_PATH"
+
+      echo "zip_path=$ZIP_PATH" >> "$GITHUB_OUTPUT"
+      echo "sha256_path=$SHA_PATH" >> "$GITHUB_OUTPUT"
+
+  - name: Upload artifact
+    uses: actions/upload-artifact@v6
+    with:
+      name: ${{ inputs.artifact_name }}
+      path: |
+        ${{ steps.package.outputs.zip_path }}
+        ${{ steps.package.outputs.sha256_path }}
+      if-no-files-found: error
+      retention-days: ${{ inputs.retention_days }}
