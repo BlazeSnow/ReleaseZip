@@ -96,19 +96,21 @@ jobs:
       if: ${{ inputs.include_sha256 }}
       run: sha256sum "${{ inputs.artifact_name }}.zip" > "${{ inputs.artifact_name }}.zip.sha256"
 
-    - name: Upload sha256 artifact
+    - name: Upload artifact with sha256
       if: ${{ inputs.include_sha256 }}
       uses: actions/upload-artifact@v6
       with:
-        name: ${{ inputs.artifact_name }}-sha256
-        path: ${{ inputs.artifact_name }}.zip.sha256
+        name: ReleaseZip
+        path: |
+          ${{ inputs.artifact_name }}.zip
+          ${{ inputs.artifact_name }}.zip.sha256
         if-no-files-found: error
         retention-days: ${{ inputs.retention_days }}
 
     - name: Upload artifact
       uses: actions/upload-artifact@v6
       with:
-        name: ${{ inputs.artifact_name }}
+        name: ReleaseZip
         path: ${{ inputs.artifact_name }}.zip
         if-no-files-found: error
         retention-days: ${{ inputs.retention_days }}
