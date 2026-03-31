@@ -1,5 +1,8 @@
 name: ReleaseZip
 description: Create a zip archive of the repository, generate a SHA256 file, and upload both as artifacts.
+branding:
+  icon: package
+  color: green
 
 inputs:
   artifact_name:
