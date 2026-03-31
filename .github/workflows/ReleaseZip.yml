@@ -55,17 +55,11 @@ jobs:
       uses: actions/checkout@v6
       with:
         lfs: true
-        fetch-depth: 0
-
-    - name: Pull LFS objects
-      run: |
-        git lfs pull
-        git lfs ls-files
+        fetch-depth: 1
+        submodules: true
 
     - name: Build zip package
-      run: |
-        set -e
-        (cd "$GITHUB_WORKSPACE" && zip -r "${{ inputs.artifact_name }}.zip" . -x ".git/*")
+      run: cd "$GITHUB_WORKSPACE" && zip -r "${{ inputs.artifact_name }}.zip" . -x ".git/*"
 
     - name: Generate sha256 file
       run: sha256sum "${{ inputs.artifact_name }}.zip" > "${{ inputs.artifact_name }}.zip.sha256"
