@@ -88,17 +88,13 @@ jobs:
         git lfs ls-files
 
     - name: Build zip package
-      with:
-        PKG_NAME: ${{ inputs.artifact_name }}
       run: |
         set -e
-        (cd "$GITHUB_WORKSPACE" && zip -r "$PKG_NAME.zip" . -x ".git/*")
+        (cd "$GITHUB_WORKSPACE" && zip -r "${{ inputs.artifact_name }}.zip" . -x ".git/*")
 
     - name: Generate sha256 file
       if: ${{ inputs.include_sha256 }}
-      with:
-        PKG_NAME: ${{ inputs.artifact_name }}
-      run: sha256sum "$PKG_NAME.zip" > "$PKG_NAME.zip.sha256"
+      run: sha256sum "${{ inputs.artifact_name }}.zip" > "${{ inputs.artifact_name }}.zip.sha256"
 
     - name: Upload sha256 artifact
       if: ${{ inputs.include_sha256 }}
