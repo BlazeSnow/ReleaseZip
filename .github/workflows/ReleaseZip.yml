@@ -1,0 +1,72 @@
+name: ReleaseZip
+
+on:
+  workflow_call:
+    inputs:
+      artifact_name:
+        required: false
+        type: string
+        default: repo-zip
+      retention_days:
+        required: false
+        type: number
+        default: 7
+      include_sha256:
+        required: false
+        type: boolean
+        default: true
+
+  workflow_dispatch:
+    inputs:
+      artifact_name:
+        description: "Artifact name"
+        required: false
+        default: "repo-zip"
+      retention_days:
+        description: "Artifact retention days"
+        required: false
+        default: "7"
+      include_sha256:
+        description: "Generate sha256 file"
+        required: false
+        default: "true"
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository (with LFS)
+      uses: actions/checkout@v6
+      with:
+        lfs: true
+        fetch-depth: 0
+
+    - name: Pull LFS objects
+      run: |
+        git lfs pull
+        git lfs ls-files
+
+    - name: Build zip package
+      run: |
+        set -e
+        REPO_NAME="${GITHUB_REPOSITORY#*/}"
+        SHORT_SHA="${GITHUB_SHA::7}"
+        PKG_NAME="${REPO_NAME}-${SHORT_SHA}.zip"
+        mkdir -p dist
+        (cd "$GITHUB_WORKSPACE" && zip -r "dist/$PKG_NAME" . -x ".git/*")
+        if [ "${{ inputs.include_sha256 }}" = "true" ]; then
+          sha256sum "dist/$PKG_NAME" > "dist/$PKG_NAME.sha256"
+        fi
+        ls -lh dist
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifact_name }}
+        path: dist/*
+        if-no-files-found: error
+        retention-days: ${{ inputs.retention_days }}
