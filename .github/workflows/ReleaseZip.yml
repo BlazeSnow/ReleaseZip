@@ -15,21 +15,33 @@ on:
         required: false
         type: boolean
         default: true
+      fetch_full_history:
+        required: false
+        type: boolean
+        default: false
 
   workflow_dispatch:
     inputs:
       artifact_name:
         description: "Artifact name"
         required: false
+        type: string
         default: "repo-zip"
       retention_days:
         description: "Artifact retention days"
         required: false
-        default: "7"
+        type: number
+        default: 7
       include_sha256:
         description: "Generate sha256 file"
         required: false
-        default: "true"
+        type: boolean
+        default: true
+      fetch_full_history:
+        description: "Fetch full git history (set true only when needed)"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -39,11 +51,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Validate inputs
+      shell: bash
+      env:
+        INPUT_ARTIFACT_NAME: ${{ inputs.artifact_name }}
+        INPUT_RETENTION_DAYS: ${{ inputs.retention_days }}
+      run: |
+        set -euo pipefail
+
+        # Validate artifact name used by upload-artifact.
+        if [ -z "$INPUT_ARTIFACT_NAME" ]; then
+          echo "artifact_name cannot be empty"
+          exit 1
+        fi
+
+        # Keep retention within artifact service limits (1-90 days).
+        if ! [[ "$INPUT_RETENTION_DAYS" =~ ^[0-9]+$ ]]; then
+          echo "retention_days must be an integer"
+          exit 1
+        fi
+
+        if [ "$INPUT_RETENTION_DAYS" -lt 1 ] || [ "$INPUT_RETENTION_DAYS" -gt 90 ]; then
+          echo "retention_days must be between 1 and 90"
+          exit 1
+        fi
+
     - name: Checkout repository (with LFS)
       uses: actions/checkout@v6
       with:
         lfs: true
-        fetch-depth: 0
+        fetch-depth: ${{ inputs.fetch_full_history && 0 || 1 }}
 
     - name: Pull LFS objects
       run: |
