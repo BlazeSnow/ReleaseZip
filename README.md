@@ -1,8 +1,10 @@
 # ReleaseZip
 
-Create a zip archive of the current repository, generate a SHA256 file, and upload both as workflow artifacts.
+将当前仓库打包为 zip，生成 SHA256 校验文件，并把两者上传为工作流产物（artifact）。
 
-## Usage
+English version: [README.en.md](./README.en.md)
+
+## 用法
 
 ```yaml
 name: Package
@@ -19,24 +21,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Run ReleaseZip
+      - name: 运行 ReleaseZip
         uses: BlazeSnow/ReleaseZip@v1
         with:
           artifact_name: my-repo-v1.0.0
           retention_days: 7
 ```
 
-## Inputs
+## 输入参数
 
-- `artifact_name`: Base name for output files and uploaded artifact. Default: `repo-zip`.
-- `retention_days`: Artifact retention days, integer in `1-90`. Default: `7`.
+- `artifact_name`：输出文件名和上传 artifact 的基础名称。默认值：`repo-zip`。
+- `retention_days`：artifact 保留天数，取值范围为 `1-90` 的整数。默认值：`7`。
 
-## Outputs
+## 输出参数
 
-- `zip_path`: Absolute path of generated zip file.
-- `sha256_path`: Absolute path of generated checksum file.
+- `zip_path`：生成的 zip 文件绝对路径。
+- `sha256_path`：生成的校验文件绝对路径。
 
-## Notes
+## 说明
 
-- This action expects `zip` and `sha256sum` to be available on the runner (available on `ubuntu-latest`).
-- Pin to a tag or commit SHA (for example `@v1` or `@<commit-sha>`) for stable builds.
+- 该 Action 依赖 Runner 环境中的 `zip` 与 `sha256sum`（`ubuntu-latest` 默认可用）。
+- 为了获得稳定构建，建议固定到 tag 或 commit SHA（例如 `@v1` 或 `@<commit-sha>`）。
