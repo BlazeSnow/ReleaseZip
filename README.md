@@ -41,3 +41,11 @@ jobs:
 | ------------- | ------------------------- |
 | `zip_path`    | 生成的 zip 文件绝对路径。 |
 | `sha256_path` | 生成的校验文件绝对路径。  |
+
+## 更新日志
+
+<https://github.com/BlazeSnow/ReleaseZip/blob/main/CHANGELOG.md>
+
+## 开发者信息
+
+<https://github.com/BlazeSnow/>
