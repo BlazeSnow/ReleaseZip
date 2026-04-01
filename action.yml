@@ -68,7 +68,7 @@ runs:
   - name: Upload artifact
     uses: actions/upload-artifact@v6
     with:
-      name: ${{ inputs.artifact_name }}
+      name: ${{ inputs.artifact_name }}_bundle
       path: |
         ${{ steps.package.outputs.zip_path }}
         ${{ steps.package.outputs.sha256_path }}
