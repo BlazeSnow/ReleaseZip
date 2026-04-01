@@ -21,7 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: 运行 ReleaseZip
+      - name: Run ReleaseZip
         uses: BlazeSnow/ReleaseZip@v1
         with:
           artifact_name: my-repo-v1.0.0
@@ -37,8 +37,3 @@ jobs:
 
 - `zip_path`：生成的 zip 文件绝对路径。
 - `sha256_path`：生成的校验文件绝对路径。
-
-## 说明
-
-- 该 Action 依赖 Runner 环境中的 `zip` 与 `sha256sum`（`ubuntu-latest` 默认可用）。
-- 为了获得稳定构建，建议固定到 tag 或 commit SHA（例如 `@v1` 或 `@<commit-sha>`）。
