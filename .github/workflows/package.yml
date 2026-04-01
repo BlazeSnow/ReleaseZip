@@ -1,0 +1,22 @@
+name: Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v6
+
+    - name: Run ReleaseZip
+      uses: BlazeSnow/ReleaseZip@v1
+      with:
+        artifact_name: ${{ github.event.repository.name }}-${{ inputs.tag }}
+        retention_days: 7
