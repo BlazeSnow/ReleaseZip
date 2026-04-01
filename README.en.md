@@ -41,3 +41,7 @@ jobs:
 | ------------- | --------------------------------------------- |
 | `zip_path`    | Absolute path of the generated zip file.      |
 | `sha256_path` | Absolute path of the generated checksum file. |
+
+## Changelog
+
+<https://github.com/BlazeSnow/ReleaseZip/blob/main/CHANGELOG.md>
