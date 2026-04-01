@@ -36,6 +36,10 @@ jobs:
 
 ```
 
+## 产物
+
+`artifact_name`_bundle.zip
+
 ## 输入参数
 
 | 参数             | 说明                                          | 必填 | 默认值     |
