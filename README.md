@@ -45,7 +45,3 @@ jobs:
 ## 更新日志
 
 <https://github.com/BlazeSnow/ReleaseZip/blob/main/CHANGELOG.md>
-
-## 开发者信息
-
-<https://github.com/BlazeSnow/>
