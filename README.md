@@ -11,6 +11,11 @@ name: Package
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag'
+        required: true
+        default: 'v1.0.0'
 
 jobs:
   package:
@@ -18,15 +23,22 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+    - name: Checkout code
+      uses: actions/checkout@v6
+      with:
+        lfs: true
 
-      - name: Run ReleaseZip
-        uses: BlazeSnow/ReleaseZip@v1
-        with:
-          artifact_name: my-repo-v1.0.0
-          retention_days: 7
+    - name: Run ReleaseZip
+      uses: BlazeSnow/ReleaseZip@v1
+      with:
+        artifact_name: ${{ github.event.repository.name }}-${{ inputs.tag }}
+        retention_days: 7
+
 ```
+
+## 产物
+
+`artifact_name`_bundle.zip
 
 ## 输入参数
 

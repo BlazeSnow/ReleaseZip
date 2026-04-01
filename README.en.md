@@ -1,6 +1,6 @@
 # ReleaseZip
 
-Create a zip archive of the current repository, generate a SHA256 file, and upload both as workflow artifacts.
+Package the current repository into a zip file, generate a SHA256 checksum file, and upload both as workflow artifacts.
 
 Simplified Chinese version: [README.md](./README.md)
 
@@ -11,6 +11,11 @@ name: Package
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag'
+        required: true
+        default: 'v1.0.0'
 
 jobs:
   package:
@@ -18,22 +23,28 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          lfs: true
 
       - name: Run ReleaseZip
         uses: BlazeSnow/ReleaseZip@v1
         with:
-          artifact_name: my-repo-v1.0.0
+          artifact_name: ${{ github.event.repository.name }}-${{ inputs.tag }}
           retention_days: 7
 ```
 
+## Artifacts
+
+`artifact_name`_bundle.zip
+
 ## Inputs
 
-| Parameter        | Description                                           | Required | Default    |
-| ---------------- | ----------------------------------------------------- | -------- | ---------- |
-| `artifact_name`  | Base name for output files and uploaded artifact.     | No       | `repo-zip` |
-| `retention_days` | Artifact retention days, integer in the range `1-90`. | No       | `7`        |
+| Parameter        | Description                                            | Required | Default    |
+| ---------------- | ------------------------------------------------------ | -------- | ---------- |
+| `artifact_name`  | Base name for output files and uploaded artifact.      | No       | `repo-zip` |
+| `retention_days` | Number of days to retain the artifact, integer `1-90`. | No       | `7`        |
 
 ## Outputs
 
