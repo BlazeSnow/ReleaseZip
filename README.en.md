@@ -2,7 +2,7 @@
 
 Create a zip archive of the current repository, generate a SHA256 file, and upload both as workflow artifacts.
 
-简体中文说明见：[README.md](./README.md)
+Simplified Chinese version: [README.md](./README.md)
 
 ## Usage
 
@@ -30,15 +30,18 @@ jobs:
 
 ## Inputs
 
-- `artifact_name`: Base name for output files and uploaded artifact. Default: `repo-zip`.
-- `retention_days`: Artifact retention days, integer in `1-90`. Default: `7`.
+| Parameter        | Description                                           | Required | Default    |
+| ---------------- | ----------------------------------------------------- | -------- | ---------- |
+| `artifact_name`  | Base name for output files and uploaded artifact.     | No       | `repo-zip` |
+| `retention_days` | Artifact retention days, integer in the range `1-90`. | No       | `7`        |
 
 ## Outputs
 
-- `zip_path`: Absolute path of generated zip file.
-- `sha256_path`: Absolute path of generated checksum file.
+| Parameter     | Description                                   |
+| ------------- | --------------------------------------------- |
+| `zip_path`    | Absolute path of the generated zip file.      |
+| `sha256_path` | Absolute path of the generated checksum file. |
 
-## Notes
+## Changelog
 
-- This action expects `zip` and `sha256sum` to be available on the runner (available on `ubuntu-latest`).
-- Pin to a tag or commit SHA (for example `@v1` or `@<commit-sha>`) for stable builds.
+<https://github.com/BlazeSnow/ReleaseZip/blob/main/CHANGELOG.md>
