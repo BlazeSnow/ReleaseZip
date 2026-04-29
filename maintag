@@ -1,6 +1,10 @@
 #!/bin/bash
+set -euo pipefail
 
-git tag -f v1 v1.0.1
-git push -f origin refs/tags/v1
+release_tag="v1.0.1"
+
+git tag -f "${release_tag}"
+git tag -f v1 "${release_tag}"
+git push -f origin "refs/tags/${release_tag}" refs/tags/v1
 git fetch --tags
-git rev-parse v1 v1.0.1
+git rev-parse v1 "${release_tag}"
