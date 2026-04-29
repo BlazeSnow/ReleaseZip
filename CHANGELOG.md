@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.0.1
+
+1. 更新actions/upload-artifact@v6至v7
+
 ## v1.0.0
 
 1. 发布第一个正式版本
